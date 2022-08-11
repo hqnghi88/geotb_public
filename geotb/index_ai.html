@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Cache-control" content="public">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashboard - GEOTB</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- MAP Leaflet 
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.1.0/dist/geosearch.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="js/lib/leaflet.zoomhome.css" />
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'
+        rel='stylesheet' />
+    <link rel="stylesheet" href="js/leaflet-slider.css" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css"
+        integrity="sha512-3q8fi8M0VS+X/3n64Ndpp6Bit7oXSiyCnzmlx6IDBLGlY5euFySyJ46RUlqIVs0DPCGOypqP8IRk/EyPvU28mQ=="
+        crossorigin="anonymous" />
+
+</head>
+
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark topbar mb-4 static-top shadow bg-dark">
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="/home"><button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0"
+                id="sidebarToggle" href="#!"><i class="fas fa-bars">|||</i></button>GEOTB</a>
+        <!-- Sidebar Toggle-->
+
+
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Core</div>
+                        <a class="nav-link" href="/home">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+                        <a class="nav-link" href="/geoai">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            GEO AI
+                        </a>
+
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Logged in as:</div>
+                    GEOTB
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+
+                    <div class="row">
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class='custom-popup' id='map'></div>
+                                <div id="thelist">
+                                    <table class="table table-borderless table-sm">
+                                        <tr style="vertical-align: text-bottom;">
+                                            <td width=40%>
+                                                <h6>Dữ liệu đang tải</h6>
+                                            </td>
+                                            <td><progress id="pbtinh" value="0" max="100"></progress></td>
+                                        </tr>
+                                        <!-- <tr style="vertical-align: text-bottom;">
+                                            <td>
+                                                <h6>Dữ liệu cấp huyện </h6>
+                                            </td>
+                                            <td><progress id="pbhuyen" value="0" max="100"></progress></td>
+                                        </tr>
+                                        <tr style="vertical-align: text-bottom;">
+                                            <td>
+                                                <h6>Dữ liệu cấp xã </h6>
+                                            </td>
+                                            <td><progress id="pbxa" value="0" max="100"></progress></td>
+                                        </tr> -->
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <div>
+                                        Tổng số ca <label id="tblname"></label>
+                                    </div>
+                                    <label id="tblpop"></label>
+                                </div>
+                                <div class="card-body" id="thetable"></div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    Điều chỉnh trọng số <label id="param_num"></label>
+                                </div>
+                                <div class="card-body" style="height: 333px">
+                                    <div>
+                                        <table>
+                                            <tr>
+                                                <td width="200px">Thói quen có hại</td>
+                                                <td>
+                                                    <input id="ex1" type="text" data-slider-min="0" data-slider-max="5"
+                                                        data-slider-step="1" data-slider-value="2" />
+                                                    <span id="ex1CurrentSliderValLabel">&nbsp&nbsp&nbsp<span
+                                                            id="ex1SliderVal"></span></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Bệnh nền</td>
+                                                <td><input id="ex2" type="text" data-slider-min="0" data-slider-max="5"
+                                                        data-slider-step="1" data-slider-value="2" />
+                                                    <span id="ex2CurrentSliderValLabel">&nbsp&nbsp&nbsp<span
+                                                            id="ex2SliderVal"></span></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Môi trường, KTXH</td>
+                                                <td> <input id="ex3" type="text" data-slider-min="0" data-slider-max="5"
+                                                        data-slider-step="1" data-slider-value="3" />
+                                                    <span id="ex3CurrentSliderValLabel">&nbsp&nbsp&nbsp<span
+                                                            id="ex3SliderVal"></span></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td> Khí hậu thời tiết</td>
+                                                <td> <input id="ex4" type="text" data-slider-min="0" data-slider-max="5"
+                                                        data-slider-step="1" data-slider-value="5" />
+                                                    <span id="ex4CurrentSliderValLabel">&nbsp&nbsp&nbsp<span
+                                                            id="ex4SliderVal"></span></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Mức độ di chuyển</td>
+                                                <td><input id="ex5" type="text" data-slider-min="0" data-slider-max="5"
+                                                        data-slider-step="1" data-slider-value="4" />
+                                                    <span id="ex5CurrentSliderValLabel">&nbsp&nbsp&nbsp<span
+                                                            id="ex5SliderVal"></span></span>
+                                                </td>
+                                            </tr>
+                                            <tr><td></td><td> </td></tr>
+                                        </table>
+
+                                    </div>
+                                    <div>
+                                        <a class="btn btn-primary" href="javascript:;"  onclick="zoom_based_layerchange();">Xác nhận</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <ul class="nav nav-tabs card-header-tabs" id="bologna-list" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" href="#cases" role="tab" aria-controls="cases"
+                                                aria-selected="true">Cases</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#rate" role="tab" aria-controls="rate"
+                                                aria-selected="false">Rate</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#history" role="tab" aria-controls="history"
+                                                aria-selected="false">Age-Sex</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#deals" role="tab" aria-controls="deals"
+                                                aria-selected="false">Treats</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#hiv" role="tab" aria-controls="hiv"
+                                                aria-selected="false">HIV</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-body">
+                                    <!-- <h4 class="card-title">Bologna</h4>
+                                    <h6 class="card-subtitle mb-2">Emilia-Romagna Region, Italy</h6> -->
+
+                                    <div class="tab-content mt-3">
+                                        <div class="tab-pane active" id="cases" role="tabpanel">
+
+                                            <!-- <div class="card-header">
+                                            </div> -->
+                                            Số ca theo tháng <label id="daily_num"></label>
+                                            <div class="card-body" style="height: 333px"><canvas
+                                                    id="myTimeChart"></canvas></div>
+                                        </div>
+                                        <div class="tab-pane" id="rate" role="tabpanel" aria-labelledby="rate-tab">
+                                            <!-- <div class="card-header">
+                                            </div> -->
+                                            Tỉ lệ trên 100,000 dân theo tháng <label id="rate_num"></label>
+                                            <div class="card-body" style="height: 333px"><canvas
+                                                    id="myRateChart"></canvas></div>
+                                        </div>
+                                        <div class="tab-pane" id="history" role="tabpanel"
+                                            aria-labelledby="history-tab">
+                                            <!-- <div class="card-header">
+                                            </div> -->
+                                            Phân bố theo giới tính và độ tuổi <label id="sexage_num"></label>
+                                            <div class="card-body" style="height: 333px"><canvas
+                                                    id="mySexAgeChart"></canvas></div>
+                                        </div>
+
+                                        <div class="tab-pane" id="deals" role="tabpanel" aria-labelledby="deals-tab">
+                                            <!-- <div class="card-header">
+                                            </div> -->
+                                            Kết quả điều trị <label id="treat_num"></label>
+                                            <div class="card-body" style="height: 333px"><canvas
+                                                    id="myTreatChart"></canvas></div>
+                                        </div>
+
+
+                                        <div class="tab-pane" id="hiv" role="tabpanel" aria-labelledby="hiv-tab">
+                                            <!-- <div class="card-header">
+                                            </div> -->
+                                            Phân bố tình trạng HIV <label id="hiv_num"></label>
+                                            <div class="card-body" style="height: 333px"><canvas
+                                                    id="myHIVChart"></canvas></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- </div>
+
+                    <div class="row"> -->
+                        <div class="col-xl-6">
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; Your Website 2021</div>
+                        <div>
+                            <a href="#">Privacy Policy</a>
+                            &middot;
+                            <a href="#">Terms &amp; Conditions</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-geosearch@3.1.0/dist/bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js"
+        integrity="sha512-f0VlzJbcEB6KiW8ZVtL+5HWPDyW1+nJEjguZ5IVnSQkvZbwBt2RfCBY0CBO1PsMAqxxrG4Di6TfsCPP3ZRwKpA=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+
+    <script src="js/lib/leaflet.zoomhome.js"></script>
+
+    <script src="js/leaflet-slider.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/basket.js/0.5.2/basket.full.min.js"></script>
+    <script src="js/scripts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+    <script>
+        var main_type_ = "geoai";
+    </script>
+    <script type="text/javascript" src="js/func/backets_load.js"></script>
+    <!-- <script type="text/javascript" src="assets/demo/chart-sexage.js"></script>
+    <script type="text/javascript" src="assets/demo/chart-time.js"></script>
+    <script type="text/javascript" src="assets/demo/chart-rate.js"></script>
+    <script type="text/javascript" src="assets/demo/chart-hiv.js"></script>
+    <script type="text/javascript" src="assets/demo/chart-treat.js"></script>
+    <script type="text/javascript" src="assets/demo/datatables.js"></script>
+
+    <script type="text/javascript" src="geotb_gama/js/allid.js"></script>
+    <script type="text/javascript" src="geotb_gama/js/adm_list.js"></script>
+    <script type="text/javascript" src="geotb_gama/js/pop_list.js"></script>
+    <script type="text/javascript" src="js/func/gis_filter.js"></script>
+    <script type="text/javascript" src="js/func/get_data.js"></script>
+    <script type="text/javascript" src="js/maplayers.js"></script>
+    <script type="text/javascript" src="js/func/fit_zoom_to.js"></script>
+    <script type="text/javascript" src="js/func/add_control.js"></script> -->
+
+
+
+</body>
+
+</html>

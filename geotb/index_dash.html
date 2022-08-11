@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GEOTB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="shortcut icon" href="images/favicon.ico" />
+
+    <!-- <link rel="icon" href="data:;base64,iVBORw0KGgo="> -->
+
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+
+    <!-- MAP Leaflet 
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" /> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="js/lib/leaflet.zoomhome.css" />
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'
+        rel='stylesheet' />
+    <link rel="stylesheet" href="js/leaflet-slider.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css"
+        integrity="sha512-3q8fi8M0VS+X/3n64Ndpp6Bit7oXSiyCnzmlx6IDBLGlY5euFySyJ46RUlqIVs0DPCGOypqP8IRk/EyPvU28mQ=="
+        crossorigin="anonymous" />
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a href="#" class="navbar-brand">GEOTB</a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav">
+                    <div>
+                        <select id="searchName1" style="width: 100px"></select>
+                        <select id="searchName2" style="width: 100px"></select>
+                        <select id="searchName3" style="width: 100px"></select>
+                    </div>
+                    <div>
+                        <select id="searchYear1" style="width: 100px"></select>&nbsp&nbsp&nbsp
+                        <input id="sldr_year" type="text" data-slider-min="0" data-slider-max="5" data-slider-step="1"
+                            data-slider-value="2" />
+                        <span id="sldr_yearCurrentSliderValLabel">
+                    </div>
+                </div>
+                <!-- <div class="navbar-nav ms-auto">              	
+                <a href="#" class="nav-item nav-link">Login</a>
+              	<a href="#" class="nav-item nav-link">Register</a>
+            </div> -->
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid h-100">
+        <!-- <div class="p-5 my-4 bg-light rounded-3">
+            <h1>Learn to Create Websites</h1>
+            <p class="lead">In today's world internet is the most popular way of connecting with the people. At <a
+                    href="https://www.tutorialrepublic.com" class="text-success"
+                    target="_blank">tutorialrepublic.com</a> you will learn the essential web development technologies
+                along with real life practice examples, so that you can create your own website to connect with the
+                people around the world.</p>
+            <p><a href="https://www.tutorialrepublic.com" target="_blank" class="btn btn-success btn-lg">Get started
+                    today</a></p>
+        </div> -->
+        <div class="row g-2 bg-light rounded-3 h-100">
+            <div class="col-md-6 h-100 ">
+                <div class="card  h-100">
+                    <div class="card-header">
+                        <div>
+                            Tổng số ca <label id="tblname"></label>. <label id="tblpop"></label>
+                        </div>
+                        <div>
+                            Thời gian thống kê: <span id="sldr_yearSliderVal">từ 2016-1 đến 2020-7</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id='map'></div>
+                        <div id="thelist">
+                            <table class="table table-borderless table-sm">
+                                <tr style="vertical-align: text-bottom;">
+                                    <td width=40%>
+                                        <h6>Đang tải</h6>
+                                    </td>
+                                    <td><progress id="pbtinh" value="0" max="100"></progress></td>
+                                </tr>
+                                <!-- <tr style="vertical-align: text-bottom;">
+                                <td>
+                                    <h6>Dữ liệu cấp huyện </h6>
+                                </td>
+                                <td><progress id="pbhuyen" value="0" max="100"></progress></td>
+                            </tr>
+                            <tr style="vertical-align: text-bottom;">
+                                <td>
+                                    <h6>Dữ liệu cấp xã </h6>
+                                </td>
+                                <td><progress id="pbxa" value="0" max="100"></progress></td>
+                            </tr> -->
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 h-100">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <ul class="nav nav-pills" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                                    data-bs-target="#home" type="button" role="tab" aria-controls="home"
+                                    aria-selected="true" onclick="changeFunc('');">Hiện trạng bênh lao</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile"
+                                    type="button" role="tab" aria-controls="profile" aria-selected="false"
+                                    onclick="changeFunc('AI');">Dự báo diễn biến bệnh lao</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="post-tab" data-bs-toggle="tab" data-bs-target="#post"
+                                    type="button" role="tab" aria-controls="post" aria-selected="false">Phân tích
+                                    sâu</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="expert-tab" data-bs-toggle="tab" data-bs-target="#expert"
+                                    type="button" role="tab" aria-controls="expert" aria-selected="false">Đánh giá của
+                                    chuyên gia</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body h-100">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="card mb-4">
+                                    <!-- <select id="searchIndicator" id="bologna-list" style="width: 100px">
+                
+                                            <option class="nav-link active" href="#all_cases" role="tab" aria-controls="all_cases"
+                                                aria-selected="true">Compare</option>
+                                            <option class="nav-link" href="#listvn" role="tab" aria-controls="listvn"
+                                                aria-selected="false">List</option>
+                                        </select> -->
+                                    <select id="floorplanSelect" name="floorplan" onchange="changeFunc(value);">
+                                        <option value="all_cases">So sánh tỉ lệ số ca nhiễm trên dân số</option>
+                                        <option value="listvn">Danh sách các địa phương</option>
+                                        <option value="cases">Số ca và tỉ lệ</option>
+                                        <option value="mdr">Lao đa kháng thuốc</option>
+                                        <option value="mdrraw">Lao đa kháng thuốc (thô)</option>
+                                        <option value="sexage">Phân bố và tỉ lệ theo giới tính, độ tuổi </option>
+                                        <option value="treat">Phân bố và tỉ lệ theo kết quả điều trị</option>
+                                        <option value="hiv">Phân bố và tỉ lệ tình trạng HIV</option>
+                                    </select>
+                                    <div class="card-body h-100">
+                                        <!-- <h4 class="card-title">Bologna</h4>
+                                        <h6 class="card-subtitle mb-2">Emilia-Romagna Region, Italy</h6> -->
+
+                                        <div class="tab-content mt-3 h-100">
+                                            <div class="tab-content">
+
+                                                <div class="tab-pane active" id="all_cases" role="tabpanel">
+                                                    Tỉ lệ trên 100000 dân <label id="alldaily_num"></label>
+                                                    <canvas id="myallTimeChart"></canvas>
+                                                </div>
+                                                <div class="tab-pane" id="listvn" role="tabpanel">
+                                                    <div class="card-body" id="thetable"></div>
+                                                </div>
+                                                <div class="tab-pane" id="cases" role="tabpanel">
+                                                    <div class="card-body" style="height: 60%;">
+                                                        Số ca theo tháng <label id="daily_num"></label>
+                                                        <div class="card-body"><canvas id="myTimeChart"></canvas>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body" style="height: 60%;">Tỉ lệ trên 100,000 dân
+                                                        theo tháng <label id="rate_num"></label>
+                                                        <div class="card-body"><canvas id="myRateChart"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane" id="mdr" role="tabpanel">
+                                                    Phân bố lao đa kháng thuốc <label id="mdr_num"></label>
+                                                    <div class="card-body"><canvas id="myMDRChart"></canvas></div>
+                                                </div>
+                                                <div class="tab-pane" id="mdrraw" role="tabpanel">
+                                                    Phân bố lao đa kháng thuốc (thô) <label id="mdrraw_num"></label>
+                                                    <div class="card-body"><canvas id="myMDRrawChart"></canvas></div>
+                                                </div>
+                                                <div class="tab-pane" id="sexage" role="tabpanel">
+                                                    Phân bố theo giới tính và độ tuổi <label id="sexage_num"></label>
+                                                    <div class="card-body"><canvas id="mySexAgeChart"></canvas></div>
+                                                </div>
+
+                                                <div class="tab-pane" id="treat" role="tabpanel">
+                                                    Kết quả điều trị <label id="treat_num"></label>
+                                                    <div class="card-body"><canvas id="myTreatChart"></canvas></div>
+                                                </div>
+
+
+                                                <div class="tab-pane" id="hiv" role="tabpanel">
+                                                    Phân bố tình trạng HIV <label id="hiv_num"></label>
+                                                    <div class="card-body"><canvas id="myHIVChart"></canvas></div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                <div class="card mb-4">
+                                    <div class="card-body" style="height:333px">
+                                        Nguy cơ theo tháng
+                                        <canvas id="mysimRateChart"></canvas>
+                                        Số ca theo tháng  
+                                        <canvas id="mysimChart"></canvas>
+                                    </div> 
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="post" role="tabpanel" aria-labelledby="post-tab">
+
+                                <div class="card-body" style="height:333px">
+                                    <div id="expertChart"></div>
+                                    <!-- Số ca theo tháng  
+                                    <canvas id="mysimexpertChart"></canvas> -->
+                                    Nguy cơ theo tháng
+                                    <canvas id="mysimexpertRateChart"></canvas>                                  
+                                </div>
+                            </div>
+
+                            
+
+                            <div class="tab-pane fade" id="expert" role="tabpanel" aria-labelledby="expert-tab">
+
+                                <div class="card-body h-100">
+                                    <iframe class="h-100" id="inlineFrameExpert" title="Inline Frame Expert"
+                                        width="100%" height="100%"
+                                        src="https://docs.google.com/forms/d/e/1FAIpQLSdrBty8BJYalSBNPX2V9GJ9zRJDwMszWI5l_pWpnzpIvLFsSg/viewform">
+                                    </iframe>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <hr> -->
+            <!-- <footer>
+        <div class="row">
+            <div class="col-md-6">
+                <p>Copyright © 2021 Tutorial Republic</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a href="#" class="text-dark">Terms of Use</a>
+                <span class="text-muted mx-2">|</span>
+                <a href="#" class="text-dark">Privacy Policy</a>
+            </div>
+        </div>
+    </footer> -->
+        </div>
+
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js"
+            integrity="sha512-f0VlzJbcEB6KiW8ZVtL+5HWPDyW1+nJEjguZ5IVnSQkvZbwBt2RfCBY0CBO1PsMAqxxrG4Di6TfsCPP3ZRwKpA=="
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+        <script
+            src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+
+        <script src="js/lib/leaflet.zoomhome.js"></script>
+
+        <script src="js/leaflet-slider.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/basket.js/0.5.2/basket.full.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script>
+            var main_type_ = "default";
+        </script>
+        <!-- <script type="text/javascript" src="js/func/backets_load.js"></script> -->
+        <script src="js/scripts.js"></script>
+        <script type="text/javascript" src="js/charts/chart-sexage.js"></script>
+        <script type="text/javascript" src="js/charts/chart-mdr.js"></script>
+        <script type="text/javascript" src="js/charts/chart-mdrraw.js"></script>
+        <script type="text/javascript" src="js/charts/chart-alltime.js"></script>
+        <script type="text/javascript" src="js/charts/chart-time.js"></script>
+        <script type="text/javascript" src="js/charts/chart-rate.js"></script>
+        <script type="text/javascript" src="js/charts/chart-sim.js"></script>
+        <script type="text/javascript" src="js/charts/chart-simexpert.js"></script>
+        <script type="text/javascript" src="js/charts/chart-hiv.js"></script>
+        <script type="text/javascript" src="js/charts/chart-treat.js"></script>
+        <script type="text/javascript" src="js/charts/datatables.js"></script>
+
+        <script type="text/javascript" src="geotb_gama/js/allid.js"></script>
+        <script type="text/javascript" src="geotb_gama/js/adm_list.js"></script>
+        <script type="text/javascript" src="geotb_gama/js/pop_list.js"></script>
+        <script type="text/javascript" src="js/func/gis_filter.js"></script>
+        <script type="text/javascript" src="js/func/get_data.js"></script>
+        <script type="text/javascript" src="js/maplayers.js"></script>
+        <script type="text/javascript" src="js/func/fit_zoom_to.js"></script>
+        <script type="text/javascript" src="js/func/add_control.js"></script>
+        <script type="text/javascript" src="js/func/add_control_ai.js"></script>
+
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript" src="js/func/get_gsheet.js"></script>
+</body>
+
+</html>
